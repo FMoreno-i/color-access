@@ -1,0 +1,131 @@
+/* Modos de color para accesibilidad */
+
+/* Normal */
+.color-mode-normal {
+    --primary-color: #7AC6FF;
+    --secondary-color: #3498db;
+    --accent-color: #2980b9;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+    --error-color: #e74c3c;
+    --text-color: #2c3e50;
+    --bg-color: #f5f5f5;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+}
+
+/* Deuteranopía */
+.color-mode-deuteranopia {
+    --primary-color: #FF807A;
+    --secondary-color: #e74c3c;
+    --accent-color: #c0392b;
+    --success-color: #f39c12;
+    --warning-color: #27ae60;
+    --error-color: #8e44ad;
+    --text-color: #2c3e50;
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --border-color: #dee2e6;
+}
+
+/* Protanopía */
+.color-mode-protanopia {
+    --primary-color: #F6FF7A;
+    --secondary-color: #f1c40f;
+    --accent-color: #f39c12;
+    --success-color: #27ae60;
+    --warning-color: #e74c3c;
+    --error-color: #8e44ad;
+    --text-color: #2c3e50;
+    --bg-color: #fffbf0;
+    --card-bg: #ffffff;
+    --border-color: #f0e68c;
+}
+
+/* Tritanopía */
+.color-mode-tritanopia {
+    --primary-color: #88FF90;
+    --secondary-color: #27ae60;
+    --accent-color: #2ecc71;
+    --success-color: #3498db;
+    --warning-color: #e74c3c;
+    --error-color: #f39c12;
+    --text-color: #2c3e50;
+    --bg-color: #f0fff0;
+    --card-bg: #ffffff;
+    --border-color: #90ee90;
+}
+
+/* Aplicar variables CSS a elementos */
+.color-mode-normal .login-button {
+    background-color: var(--primary-color);
+}
+
+.color-mode-normal .login-button:hover {
+    background-color: var(--accent-color);
+}
+
+.color-mode-normal .form-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(122, 198, 255, 0.2);
+}
+
+.color-mode-normal .register-link a {
+    color: var(--primary-color);
+}
+
+.color-mode-deuteranopia .login-button {
+    background-color: var(--primary-color);
+}
+
+.color-mode-deuteranopia .login-button:hover {
+    background-color: var(--accent-color);
+}
+
+.color-mode-deuteranopia .form-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(255, 128, 122, 0.2);
+}
+
+.color-mode-deuteranopia .register-link a {
+    color: var(--primary-color);
+}
+
+.color-mode-protanopia .login-button {
+    background-color: var(--primary-color);
+}
+
+.color-mode-protanopia .login-button:hover {
+    background-color: var(--accent-color);
+}
+
+.color-mode-protanopia .form-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(246, 255, 122, 0.2);
+}
+
+.color-mode-protanopia .register-link a {
+    color: var(--primary-color);
+}
+
+.color-mode-tritanopia .login-button {
+    background-color: var(--primary-color);
+}
+
+.color-mode-tritanopia .login-button:hover {
+    background-color: var(--accent-color);
+}
+
+.color-mode-tritanopia .form-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(136, 255, 144, 0.2);
+}
+
+.color-mode-tritanopia .register-link a {
+    color: var(--primary-color);
+}
+
+/* Transiciones suaves al cambiar modos */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}

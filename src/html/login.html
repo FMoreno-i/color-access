@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColorAccess - Iniciar Sesión</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/color-modes.css">
+</head>
+<body class="color-mode-normal">
+    <div class="container">
+        <header class="header">
+            <h1 class="app-title">ColorAccess</h1>
+            <p class="app-subtitle">Aplicación para detección y apoyo en daltonismo</p>
+        </header>
+
+        <main class="main-content">
+            <div class="login-card">
+                <h2>Iniciar Sesión</h2>
+
+                <div class="color-accessibility-section">
+                    <button id="color-toggle-btn" class="color-toggle-button">
+                        CAMBIAR COLORES
+                    </button>
+
+                    <div id="color-options" class="color-options hidden">
+                        <div class="color-option" data-mode="normal">
+                            <span class="color-sample" style="background-color: #7AC6FF;"></span>
+                            <span class="color-label">Normal</span>
+                        </div>
+                        <div class="color-option" data-mode="deuteranopia">
+                            <span class="color-sample" style="background-color: #FF807A;"></span>
+                            <span class="color-label">Deuteranopía</span>
+                        </div>
+                        <div class="color-option" data-mode="protanopia">
+                            <span class="color-sample" style="background-color: #F6FF7A;"></span>
+                            <span class="color-label">Protanopía</span>
+                        </div>
+                        <div class="color-option" data-mode="tritanopia">
+                            <span class="color-sample" style="background-color: #88FF90;"></span>
+                            <span class="color-label">Tritanopía</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="login-form" id="login-form">
+                    <div class="form-group">
+                        <label for="username">Usuario:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <button type="submit" class="login-button">Iniciar Sesión</button>
+                </form>
+
+                <div class="register-link">
+                    <p>¿No tienes cuenta? <a href="#" id="register-link">Regístrate aquí</a></p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 ColorAccess - Aplicación para accesibilidad visual</p>
+        </footer>
+    </div>
+
+    <script src="../js/color-manager.js"></script>
+    <script src="../js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColorAccess - Inicio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .welcome-container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .app-title {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        .loading {
+            margin: 1rem 0;
+        }
+        .redirect-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h1 class="app-title">ColorAccess</h1>
+        <div class="loading">Cargando aplicación...</div>
+        <p class="redirect-text">Redirigiendo a inicio de sesión...</p>
+    </div>
+
+    <script>
+        // Redireccionar automáticamente a la pantalla de login después de 2 segundos
+        setTimeout(() => {
+            window.location.href = 'src/html/login.html';
+        }, 2000);
+    </script>
+</body>
+</html>
