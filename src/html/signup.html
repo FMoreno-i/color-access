@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ColorAccess - Registro</title>
+
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/color-modes.css" />
+</head>
+
+<body class="color-mode-normal">
+<div class="container">
+  <header class="header">
+    <h1 class="app-title">ColorAccess</h1>
+    <p class="app-subtitle">Aplicación para detección y apoyo en daltonismo</p>
+  </header>
+
+  <main class="main-content">
+    <div class="login-card">
+      <h2>Crear Cuenta</h2>
+
+      <form class="login-form" id="signup-form">
+        <div class="form-group">
+          <label for="fullname">Nombre completo:</label>
+          <input type="text" id="fullname" name="fullname" placeholder="Juan Pérez" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Correo:</label>
+          <input type="email" id="email" name="email" placeholder="correo@ejemplo.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="username">Usuario:</label>
+          <input type="text" id="username" name="username" placeholder="Jugador" required />
+        </div>
+
+        <div class="form-group">
+          <label for="daltonismType">Tipo de daltonismo:</label>
+
+          <div class="select-wrapper" id="daltonismWrapper">
+            <select id="daltonismType" name="daltonismType" class="select-field" required>
+              <option value="normal">Normal (sin daltonismo)</option>
+              <option value="deuteranopia">Deuteranopía</option>
+              <option value="protanopia">Protanopía</option>
+              <option value="tritanopia">Tritanopía</option>
+              <option value="unknown">No lo sé / Prefiero no decir</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña:</label>
+          <div class="password-field">
+            <input type="password" id="password" name="password" placeholder="******" minlength="6" required />
+
+            <button type="button" class="password-toggle" data-target="password" aria-label="Mostrar u ocultar contraseña">
+              <svg class="icon-eye" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path d="M12 5C6.5 5 2 12 2 12s4.5 7 10 7 10-7 10-7-4.5-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path>
+              </svg>
+
+              <svg class="icon-eye-off" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="display:none;">
+                <path d="M2 4.27 3.28 3 21 20.72 19.73 22l-2.2-2.2A10.94 10.94 0 0 1 12 21C6.5 21 2 14 2 14s1.21-1.88 3.34-3.73L2 4.27ZM12 19c1.35 0 2.6-.3 3.73-.82l-1.62-1.62c-.64.28-1.34.44-2.11.44a5 5 0 0 1-5-5c0-.77.16-1.47.44-2.11L5.9 8.27C4.13 9.72 3.05 11.5 3.05 11.5S6.5 19 12 19Zm9.95-5S20.79 12.12 18.66 10.27L16.5 8.11A10.94 10.94 0 0 0 12 7c-.78 0-1.52.08-2.22.23L8.12 5.57A12.5 12.5 0 0 1 12 5c5.5 0 9.95 7 9.95 7ZM12 9a5 5 0 0 1 5 5c0 .37-.04.73-.12 1.07l-1.7-1.7c.02-.12.03-.24.03-.37A2.5 2.5 0 0 0 12 10.5c-.13 0-.25.01-.37.03l-1.7-1.7C10.27 9.04 10.63 9 11 9Z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar contraseña:</label>
+          <div class="password-field">
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="******" minlength="6" required />
+
+            <button type="button" class="password-toggle" data-target="confirmPassword" aria-label="Mostrar u ocultar contraseña">
+              <svg class="icon-eye" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+                <path d="M12 5C6.5 5 2 12 2 12s4.5 7 10 7 10-7 10-7-4.5-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-2.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path>
+              </svg>
+
+              <svg class="icon-eye-off" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="display:none;">
+                <path d="M2 4.27 3.28 3 21 20.72 19.73 22l-2.2-2.2A10.94 10.94 0 0 1 12 21C6.5 21 2 14 2 14s1.21-1.88 3.34-3.73L2 4.27ZM12 19c1.35 0 2.6-.3 3.73-.82l-1.62-1.62c-.64.28-1.34.44-2.11.44a5 5 0 0 1-5-5c0-.77.16-1.47.44-2.11L5.9 8.27C4.13 9.72 3.05 11.5 3.05 11.5S6.5 19 12 19Zm9.95-5S20.79 12.12 18.66 10.27L16.5 8.11A10.94 10.94 0 0 0 12 7c-.78 0-1.52.08-2.22.23L8.12 5.57A12.5 12.5 0 0 1 12 5c5.5 0 9.95 7 9.95 7ZM12 9a5 5 0 0 1 5 5c0 .37-.04.73-.12 1.07l-1.7-1.7c.02-.12.03-.24.03-.37A2.5 2.5 0 0 0 12 10.5c-.13 0-.25.01-.37.03l-1.7-1.7C10.27 9.04 10.63 9 11 9Z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="login-button">Registrarme</button>
+      </form>
+
+      <div class="register-link">
+        <p>¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a></p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 ColorAccess - Aplicación para accesibilidad visual</p>
+  </footer>
+</div>
+
+<script src="../js/color-manager.js"></script>
+<script src="../js/signup.js"></script>
+</body>
+</html>

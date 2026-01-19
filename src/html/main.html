@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ColorAccess - Inicio</title>
+
+    <!-- Ajusta rutas según tu estructura -->
+    <link rel="stylesheet" href="../css/styles.css?v=1"/>
+    <link rel="stylesheet" href="../css/color-modes.css?v=1"/>
+</head>
+
+<body class="color-mode-normal">
+<div class="container">
+
+    <!-- Topbar -->
+    <header class="header header-main">
+        <div class="mainbar">
+            <div class="mainbar-left">
+                <button class="icon-btn" id="settingsBtn" type="button" aria-label="Configuraciones">
+                    <!-- icon gear -->
+                    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                        <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96c-.5-.38-1.04-.69-1.64-.92l-.36-2.54A.5.5 0 0 0 13.9 1h-3.8a.5.5 0 0 0-.49.41l-.36 2.54c-.6.23-1.14.54-1.64.92l-2.39-.96a.5.5 0 0 0-.6.22L2.7 7.45a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.82 14.52a.5.5 0 0 0-.12.64l1.92 3.32c.13.22.39.3.6.22l2.39-.96c.5.38 1.04.69 1.64.92l.36 2.54c.04.24.25.41.49.41h3.8c.24 0 .45-.17.49-.41l.36-2.54c.6-.23 1.14-.54 1.64-.92l2.39.96c.21.08.47 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/>
+                    </svg>
+                </button>
+
+                <h1 class="main-title">Hola, <span id="mainUser">Usuario</span></h1>
+            </div>
+
+            <button class="icon-btn" id="logoutBtn" type="button" aria-label="Cerrar sesión">
+                <!-- icon logout -->
+                <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                    <path d="M10 17v-2h4v-6h-4V7l-5 5 5 5Zm9 4H12v-2h7V5h-7V3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2Z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Contenido -->
+    <main class="main-content main-layout">
+
+        <!-- Panel grande -->
+        <section class="info-panel">
+            <h2 class="panel-title">Recomendación rápida</h2>
+            <p class="panel-text">
+                Aquí podrás practicar con juegos y herramientas para mejorar tu experiencia visual.
+                Si aún no sabes tu tipo de daltonismo, te sugerimos realizar la prueba.
+            </p>
+
+            <div class="panel-actions">
+                <button class="secondary-btn" id="openTestBtn" type="button">Hacer prueba</button>
+            </div>
+
+            <!-- Opciones de color -->
+
+            <div id="color-options" class="color-options hidden">
+                <div class="color-option" data-mode="normal">
+                    <span class="color-sample" style="background-color: #7AC6FF;"></span>
+                    <span class="color-label">Normal</span>
+                </div>
+                <div class="color-option" data-mode="deuteranopia">
+                    <span class="color-sample" style="background-color: #FF807A;"></span>
+                    <span class="color-label">Deuteranopía</span>
+                </div>
+                <div class="color-option" data-mode="protanopia">
+                    <span class="color-sample" style="background-color: #F6FF7A;"></span>
+                    <span class="color-label">Protanopía</span>
+                </div>
+                <div class="color-option" data-mode="tritanopia">
+                    <span class="color-sample" style="background-color: #88FF90;"></span>
+                    <span class="color-label">Tritanopía</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tarjetas juegos -->
+        <section class="games-grid">
+            <a class="game-card" href="#" id="game1">
+                <span class="game-title">Juego 1</span>
+            </a>
+
+            <a class="game-card" href="#" id="game2">
+                <span class="game-title">Juego 2</span>
+            </a>
+
+            <a class="game-card" href="#" id="game3">
+                <span class="game-title">Juego 3</span>
+            </a>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 ColorAccess - Accesibilidad visual</p>
+    </footer>
+</div>
+
+<!-- MODAL primera vez -->
+<div class="modal-overlay" id="firstTimeModal" aria-hidden="true" style="display:none;">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <h3 class="modal-title" id="modalTitle">Es tu primera vez aquí 👋</h3>
+        <p class="modal-text">
+            ¿Quieres dar una prueba para identificar tu tipo de daltonismo?
+        </p>
+
+        <div class="modal-actions">
+            <button class="secondary-btn" id="modalNo" type="button">No</button>
+            <button class="login-button" id="modalYes" type="button">Sí</button>
+        </div>
+    </div>
+</div>
+
+<!-- Si ya tienes estos archivos, déjalos -->
+<script src="../js/color-manager.js"></script>
+
+<!-- Tu main -->
+<script src="../js/main.js"></script>
+</body>
+</html>

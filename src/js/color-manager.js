@@ -1,150 +1,86 @@
 /**
- * ColorManager - Sistema de gestión de modos de color para accesibilidad
- * Maneja los diferentes modos de color para personas con daltonismo
+ * color-manager.js
+ * Maneja el cambio de modos de color y persiste en localStorage
  */
-class ColorManager {
-    constructor() {
-        this.currentMode = 'normal';
-        this.availableModes = {
-            normal: {
-                name: 'Normal',
-                color: '#7AC6FF',
-                class: 'color-mode-normal'
-            },
-            deuteranopia: {
-                name: 'Deuteranopía',
-                color: '#FF807A',
-                class: 'color-mode-deuteranopia'
-            },
-            protanopia: {
-                name: 'Protanopía',
-                color: '#F6FF7A',
-                class: 'color-mode-protanopia'
-            },
-            tritanopia: {
-                name: 'Tritanopía',
-                color: '#88FF90',
-                class: 'color-mode-tritanopia'
-            }
-        };
+(function () {
+    const MODES = ["normal", "deuteranopia", "protanopia", "tritanopia"];
 
-        this.init();
-    }
+    function setBodyMode(mode) {
+        const body = document.body;
 
-    /**
-     * Inicializa el sistema de colores
-     */
-    init() {
-        this.loadSavedMode();
-        this.applyMode(this.currentMode);
-        this.setupEventListeners();
-    }
+        body.classList.remove(
+            "color-mode-normal",
+            "color-mode-deuteranopia",
+            "color-mode-protanopia",
+            "color-mode-tritanopia"
+        );
 
-    /**
-     * Carga el modo guardado desde localStorage
-     */
-    loadSavedMode() {
-        const savedMode = localStorage.getItem('colorAccess-mode');
-        if (savedMode && this.availableModes[savedMode]) {
-            this.currentMode = savedMode;
+        if (MODES.includes(mode)) {
+            body.classList.add("color-mode-" + mode);
+            localStorage.setItem("colorMode", mode);
+        } else {
+            body.classList.add("color-mode-normal");
+            localStorage.setItem("colorMode", "normal");
         }
     }
 
-    /**
-     * Guarda el modo actual en localStorage
-     */
-    saveMode(mode) {
-        localStorage.setItem('colorAccess-mode', mode);
+    function getSavedMode() {
+        const saved = localStorage.getItem("colorMode");
+        if (saved && MODES.includes(saved)) return saved;
+        return "normal";
     }
 
-    /**
-     * Aplica un modo de color cambiando la clase del body
-     */
-    applyMode(mode) {
-        if (!this.availableModes[mode]) {
-            console.warn(`Modo de color no válido: ${mode}`);
-            return;
-        }
-
-        // Remover todas las clases de modo de color
-        Object.values(this.availableModes).forEach(modeInfo => {
-            document.body.classList.remove(modeInfo.class);
-        });
-
-        // Aplicar la nueva clase
-        document.body.classList.add(this.availableModes[mode].class);
-        this.currentMode = mode;
-        this.saveMode(mode);
-
-        console.log(`Modo de color aplicado: ${mode}`);
+    function toggleOptions() {
+        const options = document.getElementById("color-options");
+        if (!options) return;
+        options.classList.toggle("hidden");
     }
 
-    /**
-     * Configura los event listeners para los botones de cambio de color
-     */
-    setupEventListeners() {
-        // Botón principal para mostrar/ocultar opciones
-        const toggleBtn = document.getElementById('color-toggle-btn');
-        const optionsContainer = document.getElementById('color-options');
+    function setupColorUI() {
+        const toggleBtn = document.getElementById("color-toggle-btn");
+        const options = document.getElementById("color-options");
 
-        if (toggleBtn && optionsContainer) {
-            toggleBtn.addEventListener('click', () => {
-                optionsContainer.classList.toggle('hidden');
+        if (toggleBtn) toggleBtn.addEventListener("click", toggleOptions);
+
+        if (options) {
+            options.querySelectorAll(".color-option").forEach(opt => {
+                opt.addEventListener("click", () => {
+                    const mode = opt.getAttribute("data-mode");
+                    setBodyMode(mode);
+                    options.classList.add("hidden");
+                    updateToggleButtonText();
+                });
             });
         }
 
-        // Opciones individuales de color
-        document.querySelectorAll('.color-option').forEach(option => {
-            option.addEventListener('click', (e) => {
-                const mode = e.currentTarget.dataset.mode;
-                this.applyMode(mode);
-
-                // Ocultar las opciones después de seleccionar
-                if (optionsContainer) {
-                    optionsContainer.classList.add('hidden');
-                }
-
-                // Actualizar el texto del botón para mostrar el modo actual
-                this.updateToggleButtonText();
-            });
+        // Cierra panel al click fuera
+        document.addEventListener("click", (e) => {
+            if (!options || options.classList.contains("hidden")) return;
+            if (e.target.closest(".color-accessibility-section")) return;
+            options.classList.add("hidden");
         });
     }
 
-    /**
-     * Actualiza el texto del botón para mostrar el modo actual
-     */
-    updateToggleButtonText() {
-        const toggleBtn = document.getElementById('color-toggle-btn');
-        if (toggleBtn) {
-            const modeInfo = this.availableModes[this.currentMode];
-            toggleBtn.textContent = `COLORES: ${modeInfo.name.toUpperCase()}`;
-        }
+    function updateToggleButtonText() {
+        const btn = document.getElementById("color-toggle-btn");
+        if (!btn) return;
+
+        const mode = getSavedMode();
+        const label = {
+            normal: "Normal",
+            deuteranopia: "Deuteranopía",
+            protanopia: "Protanopía",
+            tritanopia: "Tritanopía"
+        }[mode];
+
+        btn.textContent = "CAMBIAR COLORES (" + label + ")";
     }
 
-    /**
-     * Obtiene el modo actual
-     */
-    getCurrentMode() {
-        return this.currentMode;
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+        setBodyMode(getSavedMode());
+        setupColorUI();
+        updateToggleButtonText();
+    });
 
-    /**
-     * Obtiene información de un modo específico
-     */
-    getModeInfo(mode) {
-        return this.availableModes[mode] || null;
-    }
-
-    /**
-     * Obtiene todos los modos disponibles
-     */
-    getAvailableModes() {
-        return this.availableModes;
-    }
-}
-
-// Crear instancia global del ColorManager
-const colorManager = new ColorManager();
-
-// Hacer disponible globalmente para debugging
-window.colorManager = colorManager;
+    window.colorManager = { setMode: setBodyMode, getMode: getSavedMode, updateToggleButtonText };
+})();
