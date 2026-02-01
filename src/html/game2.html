@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ColorAccess - Juego 2</title>
+
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <link rel="stylesheet" href="../css/color-modes.css"/>
+
+  <style>
+    .game-wrap{ max-width:900px; }
+
+    .head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .stats{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      color: var(--muted-text, rgba(0,0,0,.65));
+      font-weight:900;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:10px;
+    }
+    .select{
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color, rgba(0,0,0,0.15));
+      background: #fff;
+      font-weight: 900;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:14px;
+      margin-top:14px;
+    }
+    .card{
+      height:110px;
+      border-radius:18px;
+      border:2px solid var(--border-color, rgba(0,0,0,.15));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:42px;
+      font-weight:1000;
+      cursor:pointer;
+      background:#fff;
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+      position: relative;
+      user-select: none;
+    }
+    .card:active{ transform: scale(.98); }
+    .card.selected{ box-shadow: var(--focus-ring); }
+    .card.matched{ opacity:.35; cursor:default; }
+
+    /* Patrón extra en fondo para reforzar no-color */
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:16px;
+      opacity:.10;
+      pointer-events:none;
+      background: repeating-linear-gradient(
+              45deg,
+              rgba(0,0,0,0.55),
+              rgba(0,0,0,0.55) 6px,
+              rgba(0,0,0,0.0) 6px,
+              rgba(0,0,0,0.0) 12px
+      );
+    }
+
+    .hint{ margin-top:10px; color: var(--muted-text, rgba(0,0,0,.65)); }
+
+    /* Overlay de colores (igual que en game1) */
+    .color-modal-overlay{
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      display:flex; align-items:flex-end; justify-content:center;
+      opacity:0; pointer-events:none;
+      transition: opacity .18s ease;
+      z-index: 9999;
+      padding: 14px;
+    }
+    .color-modal-overlay.open{ opacity:1; pointer-events:auto; }
+    .color-options{
+      width: min(520px, 95vw);
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.15);
+      padding: 10px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+    }
+    .color-option{
+      display:flex; align-items:center; gap:10px;
+      padding: 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      border: 1px solid transparent;
+      font-weight: 900;
+    }
+    .color-option:hover{ background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+    .color-sample{ width:18px; height:18px; border-radius:6px; border:1px solid rgba(0,0,0,0.12); }
+
+    @media (max-width:600px){
+      .grid{ grid-template-columns: repeat(3, 1fr); }
+      .card{ height:100px; font-size:40px; }
+    }
+  </style>
+</head>
+
+<body class="color-mode-normal">
+<div class="container">
+  <header class="header header-main">
+    <div class="mainbar">
+      <div class="mainbar-left">
+        <button class="icon-btn" id="backBtn" type="button" aria-label="Volver">
+          <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+            <path d="M15.5 19 8.5 12l7-7 1.5 1.5L11.5 12l5.5 5.5Z"></path>
+          </svg>
+        </button>
+        <h1 class="main-title">Juego 2: Empareja por patrón</h1>
+      </div>
+
+      <button class="icon-btn" id="colorsBtn" type="button" aria-label="Cambiar modo visual">
+        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+          <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96c-.5-.38-1.04-.69-1.64-.92l-.36-2.54A.5.5 0 0 0 13.9 1h-3.8a.5.5 0 0 0-.49.41l-.36 2.54c-.6.23-1.14.54-1.64.92l-2.39-.96a.5.5 0 0 0-.6.22L2.7 7.45a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.82 14.52a.5.5 0 0 0-.12.64l1.92 3.32c.13.22.39.3.6.22l2.39-.96c.5.38 1.04.69 1.64.92l.36 2.54c.04.24.25.41.49.41h3.8c.24 0 .45-.17.49-.41l.36-2.54c.6-.23 1.14-.54 1.64-.92l2.39.96c.21.08.47 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="login-card game-wrap">
+      <div class="head">
+        <h2>Ignora el color. Empareja por símbolo.</h2>
+        <div class="stats">
+          <span id="level">Nivel: 1</span>
+          <span id="pairs">Parejas: 0 / 0</span>
+          <span id="fails">Errores: 0</span>
+        </div>
+      </div>
+
+      <p class="hint">
+        Este ejercicio entrena el principio de accesibilidad: la información debe entenderse
+        con iconos/patrones/texto, no solo por color.
+      </p>
+
+      <div class="controls">
+        <label for="challengeMode" style="font-weight:900;">Reto:</label>
+        <select id="challengeMode" class="select">
+          <option value="auto">Auto (según tu daltonismo)</option>
+          <option value="none">Sin trampas de color</option>
+          <option value="redgreen">Trampa Rojo–Verde</option>
+          <option value="blueyellow">Trampa Azul–Amarillo</option>
+        </select>
+      </div>
+
+      <div id="grid" class="grid" aria-label="Tablero del juego"></div>
+
+      <div id="msg" class="message message-success" style="display:none; margin-top:12px;"></div>
+
+      <!-- Panel de opciones de color -->
+      <div id="color-options" class="color-options hidden" style="display:none;">
+        <div class="color-option" data-mode="normal">
+          <span class="color-sample" style="background-color: #7AC6FF;"></span>
+          <span class="color-label">Normal</span>
+        </div>
+        <div class="color-option" data-mode="deuteranopia">
+          <span class="color-sample" style="background-color: #FF807A;"></span>
+          <span class="color-label">Deuteranopía</span>
+        </div>
+        <div class="color-option" data-mode="protanopia">
+          <span class="color-sample" style="background-color: #F6FF7A;"></span>
+          <span class="color-label">Protanopía</span>
+        </div>
+        <div class="color-option" data-mode="tritanopia">
+          <span class="color-sample" style="background-color: #88FF90;"></span>
+          <span class="color-label">Tritanopía</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 ColorAccess - Accesibilidad visual</p>
+  </footer>
+</div>
+
+<script src="../js/color-manager.js"></script>
+<script src="../js/game2.js"></script>
+</body>
+</html>

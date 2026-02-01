@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ColorAccess - Juego 3</title>
+
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <link rel="stylesheet" href="../css/color-modes.css"/>
+
+  <style>
+    .game-wrap{ max-width: 900px; }
+
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .stats{
+      display:flex;
+      gap:12px;
+      color: var(--muted-text, rgba(0,0,0,.65));
+      font-weight:900;
+      flex-wrap:wrap;
+    }
+
+    .status-card{
+      border-radius: 22px;
+      border: 2px solid var(--border-color, rgba(0,0,0,.12));
+      padding: 18px;
+      background: #fff;
+      box-shadow: 0 10px 22px rgba(0,0,0,.06);
+      margin-top: 12px;
+    }
+
+    .status-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(0,0,0,.12));
+      font-weight: 900;
+      letter-spacing: .3px;
+      user-select:none;
+    }
+
+    .chip .icon{ font-size: 18px; }
+
+    .chip.ok {
+      background: repeating-linear-gradient(
+              45deg,
+              rgba(39,174,96,.18),
+              rgba(39,174,96,.18) 10px,
+              rgba(39,174,96,.08) 10px,
+              rgba(39,174,96,.08) 20px
+      );
+    }
+    .chip.warn {
+      background: repeating-linear-gradient(
+              45deg,
+              rgba(241,196,15,.22),
+              rgba(241,196,15,.22) 10px,
+              rgba(241,196,15,.10) 10px,
+              rgba(241,196,15,.10) 20px
+      );
+    }
+    .chip.err {
+      background: repeating-linear-gradient(
+              45deg,
+              rgba(231,76,60,.18),
+              rgba(231,76,60,.18) 10px,
+              rgba(231,76,60,.08) 10px,
+              rgba(231,76,60,.08) 20px
+      );
+    }
+
+    .status-body{ margin-top: 12px; }
+    .title{ font-weight: 1000; font-size: 1.08rem; }
+    .desc{ margin-top: 6px; color: var(--muted-text, rgba(0,0,0,.65)); font-weight: 700; }
+
+    .actions{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .pick-btn{
+      padding: 14px 12px;
+      border-radius: 18px;
+      border: 2px solid var(--border-color, rgba(0,0,0,.12));
+      background: #fff;
+      cursor:pointer;
+      font-weight: 1000;
+    }
+    .pick-btn:hover{ background: rgba(0,0,0,.02); }
+    .pick-btn:active{ transform: scale(.98); }
+
+    .hint{
+      margin-top: 10px;
+      color: var(--muted-text, rgba(0,0,0,.65));
+      font-weight: 700;
+    }
+
+    /* Selector visible de modo visual (tipo "trampa") */
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top: 10px;
+    }
+    .select{
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border-color, rgba(0,0,0,0.15));
+      background: #fff;
+      font-weight: 900;
+    }
+
+    @media (max-width: 650px){
+      .actions{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body class="color-mode-normal">
+<div class="container">
+  <header class="header header-main">
+    <div class="mainbar">
+      <div class="mainbar-left">
+        <button class="icon-btn" id="backBtn" type="button" aria-label="Volver">
+          <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+            <path d="M15.5 19 8.5 12l7-7 1.5 1.5L11.5 12l5.5 5.5Z"></path>
+          </svg>
+        </button>
+        <h1 class="main-title">Juego 3: Semáforo accesible</h1>
+      </div>
+
+      <!-- Solo dejamos reiniciar (quitamos el botón de config) -->
+      <button class="icon-btn" id="restartBtn" type="button" aria-label="Reiniciar">
+        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+          <path d="M12 6V3L8 7l4 4V8c2.76 0 5 2.24 5 5a5 5 0 1 1-8.66-3.54L6.9 8.02A7 7 0 1 0 12 6Z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="login-card game-wrap">
+
+      <div class="top">
+        <h2>Identifica el estado correcto</h2>
+        <div class="stats">
+          <span id="level">Nivel: 1</span>
+          <span id="score">Puntaje: 0</span>
+          <span id="streak">Racha: 0</span>
+        </div>
+      </div>
+
+      <p class="hint">
+        No dependas del color: fijate en el icono, el texto y el patron.
+      </p>
+
+      <!-- Selector "trampa" visible -->
+      <div class="controls">
+        <label for="visualMode" style="font-weight:900;">Modo visual:</label>
+        <select id="visualMode" class="select" aria-label="Cambiar modo visual">
+          <option value="normal">Normal</option>
+          <option value="deuteranopia">Deuteranopía</option>
+          <option value="protanopia">Protanopía</option>
+          <option value="tritanopia">Tritanopía</option>
+        </select>
+      </div>
+
+      <div class="status-card" id="card">
+        <div class="status-head">
+          <div class="chip ok" id="chip">
+            <span class="icon" id="chipIcon">[OK]</span>
+            <span id="chipText">CORRECTO</span>
+          </div>
+          <div class="hint" id="timerText">Tiempo: —</div>
+        </div>
+
+        <div class="status-body">
+          <div class="title" id="title">—</div>
+          <div class="desc" id="desc">—</div>
+        </div>
+
+        <div class="actions">
+          <button class="pick-btn" id="btnOk" type="button">Correcto</button>
+          <button class="pick-btn" id="btnWarn" type="button">Advertencia</button>
+          <button class="pick-btn" id="btnErr" type="button">Error</button>
+        </div>
+
+        <div id="msg" class="message message-success" style="display:none; margin-top:12px;"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 ColorAccess - Accesibilidad visual</p>
+  </footer>
+</div>
+
+<script src="../js/color-manager.js"></script>
+<script src="../js/game3.js"></script>
+</body>
+</html>

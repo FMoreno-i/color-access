@@ -1,15 +1,16 @@
 let colorOverlay = null;
 let optionsPanel = null;
-let optionsHome = null; // 👈 padre original
+let optionsHome = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     // Solo MAIN
     if (document.querySelector(".header-main")) {
         optionsPanel = document.getElementById("color-options");
-        if (optionsPanel) optionsHome = optionsPanel.parentElement; // 👈 guardar una sola vez
+        if (optionsPanel) optionsHome = optionsPanel.parentElement;
 
         setupTopbarActions();
         setupColorPickerInMain();
+        setupQuickButtons();
     }
 
     applyUser();
@@ -17,38 +18,59 @@ document.addEventListener("DOMContentLoaded", () => {
     setupFirstTimeModal();
 });
 
-function applySavedColorMode() {
-    const mode = localStorage.getItem("colorMode") || "normal";
-    applyMode(mode);
+/* =========================
+   USER
+========================= */
+function applyUser() {
+    const savedUser = localStorage.getItem("loggedUser") || "Usuario";
+    const span = document.getElementById("mainUser");
+    if (span) span.textContent = savedUser;
 }
 
-function applyMode(mode) {
-    // normaliza por si llega "color-mode-xxx"
-    mode = (mode || "normal").toString().replace("color-mode-", "");
+/* =========================
+   COLOR - usa SOLO colorManager (una sola fuente de verdad)
+========================= */
+function applySavedColorMode() {
+    const mode = localStorage.getItem("colorMode") || "normal";
 
-    // ✅ Quitar cualquier modo previo (importante)
+    // Usa el manager siempre que exista
+    if (window.colorManager && typeof window.colorManager.setMode === "function") {
+        window.colorManager.setMode(mode);
+        window.colorManager.updateToggleButtonText?.();
+        return;
+    }
+
+    // Fallback si por alguna razón no cargó color-manager.js
     document.body.classList.remove(
         "color-mode-normal",
         "color-mode-deuteranopia",
         "color-mode-protanopia",
         "color-mode-tritanopia"
     );
-
-    // ✅ Poner el nuevo modo
     document.body.classList.add(`color-mode-${mode}`);
-
-    // ✅ Debug (para ver en consola)
-    console.log("Modo aplicado:", mode, "Body class:", document.body.className);
 }
 
+function setModeAndSave(mode) {
+    localStorage.setItem("colorMode", mode);
 
+    if (window.colorManager && typeof window.colorManager.setMode === "function") {
+        window.colorManager.setMode(mode);
+        window.colorManager.updateToggleButtonText?.();
+    } else {
+        applySavedColorMode();
+    }
+}
+
+/* =========================
+   MODAL DE COLORES (drawer)
+========================= */
 function openColorModal() {
     if (colorOverlay || !optionsPanel || !optionsHome) return;
 
     colorOverlay = document.createElement("div");
     colorOverlay.className = "color-modal-overlay";
 
-    // meter panel dentro del overlay
+    // mover panel dentro del overlay
     colorOverlay.appendChild(optionsPanel);
 
     // mostrar
@@ -63,7 +85,6 @@ function openColorModal() {
     // click dentro NO cierra
     optionsPanel.addEventListener("click", stopOverlayClose);
 
-
     // ESC cierra
     document.addEventListener("keydown", escOverlayClose);
 }
@@ -73,10 +94,10 @@ function closeColorModal() {
 
     colorOverlay.classList.remove("open");
 
-    // devolver SIEMPRE al padre original
+    // devolver al padre original
     optionsHome.appendChild(optionsPanel);
 
-    // ocultar panel para que no quede abajo visible
+    // ocultar panel
     optionsPanel.classList.add("hidden");
 
     // limpiar listeners
@@ -87,6 +108,7 @@ function closeColorModal() {
     colorOverlay.remove();
     colorOverlay = null;
 }
+
 function stopOverlayClose(e) {
     e.stopPropagation();
 }
@@ -95,53 +117,64 @@ function escOverlayClose(e) {
     if (e.key === "Escape") closeColorModal();
 }
 
+/* =========================
+   TOPBAR: settings + logout
+========================= */
+function setupTopbarActions() {
+    const settingsBtn = document.getElementById("settingsBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-function applyUser() {
-    const savedUser = localStorage.getItem("loggedUser") || "Usuario";
-    const span = document.getElementById("mainUser");
-    if (span) span.textContent = savedUser;
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("loggedUser");
+            localStorage.removeItem("isLoggedIn"); // ✅ importante
+            window.location.href = "login.html";
+        });
+    }
+
+    if (!settingsBtn) return;
+
+    settingsBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (colorOverlay) closeColorModal();
+        else openColorModal();
+    });
 }
 
 /* =========================
-   ✅ COLOR: aplicar lo elegido en login
-   - Usa localStorage.colorMode (misma key para login/signup/main)
+   PICKER: click en opción de color
 ========================= */
-function applySavedColorMode() {
-    const mode = localStorage.getItem("colorMode") || "normal";
+function setupColorPickerInMain() {
+    if (!optionsPanel) return;
 
-    // Si existe colorManager, él manda
-    if (window.colorManager && typeof window.colorManager.setMode === "function") {
-        window.colorManager.setMode(mode);
+    optionsPanel.querySelectorAll(".color-option").forEach((opt) => {
+        opt.addEventListener("click", () => {
+            const mode = opt.getAttribute("data-mode");
+            if (!mode) return;
 
-        // si tu manager tiene texto/botón, lo actualiza
-        if (typeof window.colorManager.updateToggleButtonText === "function") {
-            window.colorManager.updateToggleButtonText();
-        }
-        return;
+            setModeAndSave(mode); // ✅ aplica + guarda usando el manager
+            closeColorModal();    // ✅ cierra overlay
+        });
+    });
+}
+
+/* =========================
+   BOTONES RÁPIDOS
+========================= */
+function setupQuickButtons() {
+    const openTestBtn = document.getElementById("openTestBtn");
+    if (openTestBtn) {
+        openTestBtn.addEventListener("click", () => {
+            window.location.href = "test.html";
+        });
     }
-
-    // fallback por clases en body
-    document.body.classList.remove(
-        "color-mode-normal",
-        "color-mode-deuteranopia",
-        "color-mode-protanopia",
-        "color-mode-tritanopia"
-    );
-    document.body.classList.add(`color-mode-${mode}`);
 }
 
-/* ✅ Guardar + aplicar */
-function setModeAndSave(mode) {
-    localStorage.setItem("colorMode", mode);
-    applySavedColorMode();
-}
-
-/**
- * Modal:
- * - Si quieres que salga SIEMPRE al iniciar sesión:
- *   en login.js pon: localStorage.removeItem("firstTimeDone");
- * - Aquí lo dejamos con lógica firstTimeDone.
- */
+/* =========================
+   MODAL FIRST TIME
+========================= */
 function setupFirstTimeModal() {
     const overlay = document.getElementById("firstTimeModal");
     const btnNo = document.getElementById("modalNo");
@@ -159,7 +192,6 @@ function setupFirstTimeModal() {
         overlay.setAttribute("aria-hidden", "true");
     };
 
-    // ✅ se muestra si firstTimeDone NO es true
     const alreadySeen = localStorage.getItem("firstTimeDone") === "true";
     if (!alreadySeen) openModal();
 
@@ -188,74 +220,4 @@ function setupFirstTimeModal() {
             closeAndRemember();
         }
     });
-}
-
-
-function setupTopbarActions() {
-    const settingsBtn = document.getElementById("settingsBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-            localStorage.removeItem("loggedUser");
-            window.location.href = "login.html";
-        });
-    }
-
-    if (!settingsBtn) return;
-
-    settingsBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (colorOverlay) closeColorModal();
-        else openColorModal();
-    });
-}
-
-
-function setupColorPickerInMain() {
-    if (!optionsPanel) return;
-
-    optionsPanel.querySelectorAll(".color-option").forEach(opt => {
-        opt.addEventListener("click", () => {
-            const mode = opt.getAttribute("data-mode");
-            if (!mode) return;
-
-            localStorage.setItem("colorMode", mode);
-            applyMode(mode);          // ✅ cambia el color SIEMPRE
-            closeColorModal();        // ✅ se cierra y luego puedes abrir otra vez sin refrescar
-        });
-    });
-}
-
-
-function toggleColorOptions(forceOpen) {
-    const options = document.getElementById("color-options");
-    if (!options) return;
-
-    // forceOpen: true => abre, false => cierra, undefined => toggle
-    if (forceOpen === true) {
-        options.classList.remove("hidden");
-    } else if (forceOpen === false) {
-        options.classList.add("hidden");
-    } else {
-        options.classList.toggle("hidden");
-    }
-}
-
-function setupQuickButtons() {
-    const openTestBtn = document.getElementById("openTestBtn");
-    const openColorsBtn = document.getElementById("openColorsBtn");
-
-    if (openTestBtn) {
-        openTestBtn.addEventListener("click", () => {
-            window.location.href = "test.html";
-        });
-    }
-
-    if (openColorsBtn) {
-        openColorsBtn.addEventListener("click", () => {
-            toggleColorOptions();
-        });
-    }
 }

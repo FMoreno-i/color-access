@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ColorAccess - Juego 1</title>
+
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/color-modes.css" />
+
+    <style>
+        .game-card-wrap{ max-width: 900px; }
+        .game-head{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom: 10px;}
+        .stats{ display:flex; gap:12px; flex-wrap:wrap; color: var(--muted-text, rgba(0,0,0,0.65)); font-weight: 800; }
+
+        .controls{
+            display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
+            align-items:center;
+        }
+        .select{
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color, rgba(0,0,0,0.15));
+            background: #fff;
+            font-weight: 900;
+        }
+
+        .board{ display:grid; gap:10px; justify-content:center; margin-top: 12px; }
+        .cell{
+            width: 52px; height: 52px; border-radius: 16px; cursor:pointer;
+            border: 1px solid var(--border-color, rgba(0,0,0,0.12));
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+        }
+        .cell:active{ transform: scale(0.98); }
+
+        .hint{ color: var(--muted-text, rgba(0,0,0,0.65)); }
+
+        /* Overlay de colores (igual estilo base que main) */
+        .color-modal-overlay{
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            display:flex; align-items:flex-end; justify-content:center;
+            opacity:0; pointer-events:none;
+            transition: opacity .18s ease;
+            z-index: 9999;
+            padding: 14px;
+        }
+        .color-modal-overlay.open{ opacity:1; pointer-events:auto; }
+        .color-options{
+            width: min(520px, 95vw);
+            border-radius: 18px;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.15);
+            padding: 10px;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+        }
+        .color-option{
+            display:flex; align-items:center; gap:10px;
+            padding: 12px;
+            border-radius: 14px;
+            cursor:pointer;
+            border: 1px solid transparent;
+            font-weight: 900;
+        }
+        .color-option:hover{ background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        .color-sample{ width:18px; height:18px; border-radius:6px; border:1px solid rgba(0,0,0,0.12); }
+
+        @media (max-width: 520px){ .cell{ width: 44px; height: 44px; } }
+    </style>
+</head>
+
+<body class="color-mode-normal">
+<div class="container">
+    <header class="header header-main">
+        <div class="mainbar">
+            <div class="mainbar-left">
+                <button class="icon-btn" id="backBtn" type="button" aria-label="Volver">
+                    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                        <path d="M15.5 19 8.5 12l7-7 1.5 1.5L11.5 12l5.5 5.5L15.5 19Z"></path>
+                    </svg>
+                </button>
+                <h1 class="main-title">Juego 1: Encuentra el diferente</h1>
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:center;">
+
+                <button class="icon-btn" id="restartBtn" type="button" aria-label="Reiniciar">
+                    <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+                        <path d="M12 6V3L8 7l4 4V8c2.76 0 5 2.24 5 5a5 5 0 1 1-8.66-3.54L6.9 8.02A7 7 0 1 0 12 6Z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="login-card game-card-wrap">
+            <div class="game-head">
+                <h2>Haz clic en el cuadro distinto</h2>
+                <div class="stats">
+                    <span id="level">Nivel: 1</span>
+                    <span id="score">Puntaje: 0</span>
+                    <span id="delta">Diferencia: 28</span>
+                </div>
+            </div>
+
+            <p class="hint">
+                Entrenamiento: selecciona el tipo de colores a practicar. Si no lo ves bien, abre “cambiar colores” sin salir del juego.
+            </p>
+
+            <div class="controls">
+                <label for="trainingMode" style="font-weight:900;">Modo:</label>
+                <select id="trainingMode" class="select">
+                    <option value="auto">Auto (según tu daltonismo)</option>
+                    <option value="luminance">Contraste / luminancia</option>
+                    <option value="redgreen">Rojo–Verde</option>
+                    <option value="blueyellow">Azul–Amarillo</option>
+                </select>
+
+                <label style="display:flex; gap:8px; align-items:center; font-weight:900;">
+                    <input type="checkbox" id="assistToggle" />
+                    Asistencia (invertir/alto contraste)
+                </label>
+            </div>
+
+            <div id="board" class="board" aria-label="Tablero del juego"></div>
+
+            <div class="panel-actions" style="margin-top:12px;">
+                <button class="secondary-btn" id="easierBtn" type="button">Más fácil</button>
+                <button class="secondary-btn" id="harderBtn" type="button">Más difícil</button>
+            </div>
+
+            <div id="msg" class="message message-success" style="display:none; margin-top:12px;"></div>
+
+            <!-- Panel de opciones de color (igual que main) -->
+            <div id="color-options" class="color-options hidden" style="display:none;">
+                <div class="color-option" data-mode="normal">
+                    <span class="color-sample" style="background-color: #7AC6FF;"></span>
+                    <span class="color-label">Normal</span>
+                </div>
+                <div class="color-option" data-mode="deuteranopia">
+                    <span class="color-sample" style="background-color: #FF807A;"></span>
+                    <span class="color-label">Deuteranopía</span>
+                </div>
+                <div class="color-option" data-mode="protanopia">
+                    <span class="color-sample" style="background-color: #F6FF7A;"></span>
+                    <span class="color-label">Protanopía</span>
+                </div>
+                <div class="color-option" data-mode="tritanopia">
+                    <span class="color-sample" style="background-color: #88FF90;"></span>
+                    <span class="color-label">Tritanopía</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 ColorAccess - Accesibilidad visual</p>
+    </footer>
+</div>
+
+<script src="../js/color-manager.js"></script>
+<script src="../js/game1.js"></script>
+</body>
+</html>
